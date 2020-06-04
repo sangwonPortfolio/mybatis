@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+<configuration>
+	<!-- 3_3. driver.properties 적용 -->
+	<properties resource="/driver.properties"/>
+<!-- 
+	0. 마이바티스 설정과 관련된 기본 세팅을 선언하는 부분
+ -->
+ <!-- 0_1. 데이터 null값 처리하기 -->
+ 	<!-- 만약에 null로 데이터가 전달되었다면 빈칸이 아닌 null로 인식해라라고 하는 의미 value에는 null은 반드시 대문자로 해야 됨, 소문자로 하면 에러 발생 -->
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL"/>
+	</settings>
+	
+	<!-- typeAliases 부분은 로그인하면서 추가해 주자.
+		 vo객체들의 풀네임을 매번 사용하기 번거롭기 때문에 별칭을 등록한 것 -->
+	<typeAliases>
+		<typeAlias type="member.model.vo.Member" alias="Member"/>
+	</typeAliases>
+	
+	<!-- configuration xml의 역할 
+		- 어떤 DBMS와 연동될지와 어떤 계정과 연동 될지를 설정
+			(properties도 등록 가능)
+		- sql문이 작성된 mapper.xml 파일 등록
+		- vo클래스에 대한 별칭 설정(경로명이 기니까 쉽고 짧게 쓸 수 잇도록)
+			ex) member.model.vo.Member라는 걸 Member라고 간단히 쓸 수 있게 설정
+	-->
+	
+	<!-- 1. DB와 연결할 설정에 대한 정보를 선언하는 부분 -->
+	<environments default="development">
+	<!-- default : 연결 설정을 여러 개 생성하여 아이디로 구분하고 기본으로 연결할 정보를 설정하는 속성 -->
+		<environment id="development">
+		<!-- environment id로 구분하여 연결 할 DB를 여러 개 구성할 수 있다. development환경, production환경 등등 -->
+			<transactionManager type="JDBC"></transactionManager>
+			<!-- transactionManager는 JDBC와 MANAGED 둘 중 하나를 성택할 수 있음
+				-JDBC : JDBC가 commit과 rollback의 기능을 직접 사용 가능하게 하는 옵션(수동 commit이나 rollback)
+				- MANAGED : 트랜색션에 대해 어떤 영향도 행사하지 않는다는 옵션(자동 commit이나 rollback)
+							컨테이너가 트랜잭션의 모든 생명주기를 관리한다.
+			 -->
+			<dataSource type="POOLED">
+			<!-- dataSource는 실제 DB접속에 관한 정보들을 넣는 태그이며 type속성은 ConnectionPool을 사용할 건지에 대해
+					POOLED와 UNPOOLED를 사용할 수 있음
+					POOLED는 커넥션 객체를 유지한다고 생각하면 됨 -->
+					
+				<!-- 2. driver, url, username, password 정보를 value로 직접 쓰기 -->
+				<!-- <property name="driver" value="oracle.jdbc.driver.OracleDriver"></property>
+				<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe"></property>
+				<property name="username" value="mybatis"></property>
+				<property name="password" value="mybatis"></property> -->
+				
+				<!-- 3. 2번 대신에 properties같은 파일에 있는 값을 활용하고 싶으면..
+					 3_1. resources 폴더에 driver.properties 파일을 만듦
+					 3_2. 위쪽에 올라가서 configuration 안에 properties 속성을 지정하여 만들어둔 driver.properties와 연결
+					 3_4. 아래 코드 작성
+				 -->
+				<property name="driver" value="${driver}"></property>
+				<property name="url" value="${url}"></property>
+				<property name="username" value="${username}"></property>
+				<property name="password" value="${password}"></property>
+				<!-- 여기까지 작성하면 index.jsp로 이동하자 -->
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- 로그인할 때 쿼리쓰고 등록하는 부분(로그인시 맨 마지막에 작성하자) -->
+	<mappers>
+		<mapper resource="/mappers/member-mapper.xml"/>
+	</mappers>
+
+
+</configuration>
